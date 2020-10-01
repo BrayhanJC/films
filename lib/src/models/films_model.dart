@@ -58,9 +58,7 @@ class Film {
     this.originalTitle = json['original_title'];
     this.genreIds = json['genre_ids'].cast<int>();
     this.title = json['title'];
-    this.voteAverage = (json['vote_average'] > 0)
-        ? (json['vote_average'] / 1)
-        : json['vote_average'];
+    this.voteAverage = (json['vote_average']/1);
     this.overview = json['overview'];
     this.releaseDate = json['release_date'];
   }
