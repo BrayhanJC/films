@@ -8,6 +8,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    filmsProvider.getPopulars();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -56,16 +57,20 @@ class HomePage extends StatelessWidget {
     return Container(
       width: double.infinity,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.only(left:20),
-            child: Text('Populares', style: Theme.of(context).textTheme.subtitle1)),
-          SizedBox(height:5),
-          FutureBuilder(
-              future: filmsProvider.getPopulars(),
+              padding: EdgeInsets.only(left: 20),
+              child: Text('Populares',
+                  style: Theme.of(context).textTheme.subtitle1)),
+          SizedBox(height: 5),
+          StreamBuilder(
+              stream: filmsProvider.popularStream,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
-                  return CardHorizontal(films: snapshot.data);
+                  return CardHorizontal(
+                      films: snapshot.data,
+                      nextPage: filmsProvider.getPopulars);
                 } else {
                   return Container(
                     height: 400,
@@ -75,7 +80,6 @@ class HomePage extends StatelessWidget {
                   );
                 }
               }),
-          
         ],
       ),
     );
