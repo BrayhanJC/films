@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:films/src/models/Actors_models.dart';
 import 'package:http/http.dart' as http;
 import 'package:films/src/models/films_model.dart';
 
@@ -29,15 +30,24 @@ class FilmsProvider {
     return resultUrl;
   }
 
+  Future<List<Film>> processResponse(String nameUrl, String query) async {
+    final url = Uri.https(_url, nameUrl,
+        {'api_key': _apiKey, 'language': _language, 'query': query});
+    final response = await http.get(url);
+    final decodeData = json.decode(response.body);
+    final films = new Films.fromJsonList(decodeData['results']);
+    // print(films.items[0].title)
+
+    return films.items;
+  }
+
   Future<List<Film>> returnFilms(String nameUrl, String numberPage) async {
-    
-    
     final url = getUrlApi(_url, nameUrl, numberPage);
     final response = await http.get(url);
     final decodeData = json.decode(response.body);
     final films = new Films.fromJsonList(decodeData['results']);
     // print(films.items[0].title)
-    
+
     return films.items;
   }
 
@@ -47,15 +57,28 @@ class FilmsProvider {
   }
 
   Future<List<Film>> getPopulars() async {
-    if(_loading) return [];
+    if (_loading) return [];
     _loading = true;
     _popularesPage++;
-    final resp = await returnFilms('3/movie/popular', _popularesPage.toString());
-    
-    print('cargando siguientes...');
+    final resp =
+        await returnFilms('3/movie/popular', _popularesPage.toString());
     _populares.addAll(resp);
     popularesSink(_populares);
     _loading = false;
     return resp;
+  }
+
+  Future<List<Actor>> getActor(String filmId) async {
+    final url = Uri.https(_url, '3/movie/$filmId/credits',
+        {'api_key': _apiKey, 'language': _language});
+
+    final resp = await http.get(url);
+    final decodedData = json.decode(resp.body);
+    final actor = new Actors.fromJsonList(decodedData['cast']);
+    return actor.actores;
+  }
+
+  Future<List<Film>> searchFilm(String query) async {
+    return await processResponse('3/search/movie', query.toString());
   }
 }

@@ -12,6 +12,7 @@ class Films {
 }
 
 class Film {
+  String uniqueId;
   double popularity;
   int voteCount;
   bool video;
@@ -70,4 +71,13 @@ class Film {
       return 'https://image.tmdb.org/t/p/w500/$posterPath';
     }
   }
+
+   getBackgroundImg() {
+    if (posterPath == null) {
+      return '';
+    } else {
+      return 'https://image.tmdb.org/t/p/w500/$backdropPath';
+    }
+  }
+
 }
